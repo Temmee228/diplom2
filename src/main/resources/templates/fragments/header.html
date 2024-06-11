@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заголовок</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #343a40;
+            color: #ffffff;
+        }
+
+        .personal-account {
+            display: flex;
+            align-items: center;
+        }
+
+        .personal-account img {
+            width: 30px;
+            height: 30px;
+            margin-right: 10px;
+        }
+
+        .personal-account span {
+            font-size: 16px;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-content">
+        <!-- Другие элементы заголовка, такие как навигация -->
+        <div class="personal-account">
+            <a th:href="@{/user/profile}">
+                <img src="/images/lk.png" alt="Личный кабинет">
+                <span>Личный кабинет</span>
+            </a>
+        </div>
+    </div>
+</header>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .profile-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+        .profile-container img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+        .profile-container h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .profile-container p {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .profile-container .event-count {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 20px;
+        }
+        .profile-container .logout-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #dc3545;
+            border: none;
+            color: #ffffff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .profile-container .logout-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+<div class="profile-container">
+    <img src="/images/lk.png" alt="Личный кабинет">
+    <h1>Личный кабинет</h1>
+    <p>Имя: <span th:text="${user.name}"></span></p>
+    <p>Фамилия: <span th:text="${user.surname}"></span></p>
+    <p>Отчество: <span th:text="${user.middleName}"></span></p>
+    <p>Город: <span th:text="${user.city}"></span></p>
+    <p>Университет: <span th:text="${user.university}"></span></p>
+    <p class="event-count">Количество посещенных мероприятий: <span th:text="${eventCount}"></span></p>
+    <button class="logout-button" onclick="location.href='/logout'">Выйти</button>
+</div>
+</body>
+</html>

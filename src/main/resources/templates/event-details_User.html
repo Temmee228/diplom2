@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Детали события</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js'></script>
+    <style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #343a40;
+            color: white;
+        }
+        .profile-container img {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+    </style>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const stages = /*[[${event.stages}]]*/ []; // JSON-представление стадий
+
+            // Преобразование стадий в формат FullCalendar
+            const events = stages.map(stage => {
+                return {
+                    title: stage.name,
+                    start: stage.date,
+                    description: stage.description
+                };
+            });
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'ru',
+                initialView: 'dayGridMonth',
+                events: events,
+                displayEventTime: false,
+                validRange: function(nowDate) {
+                    return {
+                        start: events.length ? events[0].start : nowDate,
+                        end: events.length ? events[events.length - 1].start : nowDate
+                    };
+                },
+                // Отображение только тех дней, в которые есть мероприятия
+                dayCellContent: function(e) {
+                    if (!events.some(event => event.start.includes(e.date.toISOString().split('T')[0]))) {
+                        e.dayNumberText = '';
+                    }
+                }
+            });
+
+            calendar.render();
+        });
+        /*]]>*/
+    </script>
+</head>
+<body>
+<div class="header">
+    <h1>Детали события</h1>
+    <div class="profile-container">
+        <a href="/user/profile">
+            <img src="/images/lk.png" alt="Личный кабинет" />
+        </a>
+    </div>
+</div>
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-body">
+            <h2 class="card-title">Название: <span th:text="${event.nameEvent}"></span></h2>
+            <p class="card-text"><b>Дата:</b> <span th:text="${event.date}"></span></p>
+            <p class="card-text"><b>Описание:</b> <span th:text="${event.description}"></span></p>
+        </div>
+    </div>
+
+    <h3>Участники:</h3>
+    <ul class="list-group mb-4">
+        <li class="list-group-item" th:each="participant : ${event.participants}">
+            <span th:text="${participant.name}">Имя</span> <span th:text="${participant.surname}">Фамилия</span>
+        </li>
+    </ul>
+    <form th:action="@{/user/event-details/{id}/apply(id=${event.id})}" method="post" class="mb-4">
+        <button type="submit" class="btn btn-primary">Подать заявление</button>
+    </form>
+    <a th:href="@{/user/events_User}" class="btn btn-secondary mb-4">Назад к списку событий</a>
+
+    <div id="calendar" class="mb-4"></div>
+
+    <h3>Комментарии:</h3>
+    <ul class="list-group mb-4">
+        <li class="list-group-item" th:each="entry : ${event.comments}">
+            <span th:text="${entry.key.name}">Имя</span>: <span th:text="${entry.value}">Комментарий</span>
+        </li>
+    </ul>
+    <form th:action="@{/user/event-details/{id}/comment(id=${event.id})}" method="post" class="form-inline">
+        <div class="form-group mx-sm-3 mb-2">
+            <input type="text" name="comment" class="form-control" placeholder="Добавить комментарий" required />
+        </div>
+        <button type="submit" class="btn btn-primary mb-2">Добавить комментарий</button>
+    </form>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

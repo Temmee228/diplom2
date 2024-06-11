@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .registration-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .registration-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .registration-container form {
+            display: flex;
+            flex-direction: column;
+        }
+        .registration-container input {
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        .registration-container button {
+            padding: 10px;
+            background-color: #28a745;
+            border: none;
+            color: #ffffff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .registration-container button:hover {
+            background-color: #218838;
+        }
+        .registration-container .login-link {
+            margin-top: 10px;
+            text-align: center;
+        }
+        .registration-container .login-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .registration-container .login-link a:hover {
+            text-decoration: underline;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="registration-container">
+    <h2>Регистрация</h2>
+    <form method="post" action="/registration">
+        <input type="text" name="mail" placeholder="Почта" required>
+        <input type="text" name="name" placeholder="Имя" required>
+        <input type="text" name="surname" placeholder="Фамилия" required>
+        <input type="text" name="middleName" placeholder="Отчество" required>
+        <input type="text" name="party" placeholder="Группа" required>
+        <input type="text" name="city" placeholder="Город" required>
+        <input type="text" name="university" placeholder="Вуз" required>
+        <input type="text" name="username" placeholder="Логин" required>
+        <input type="password" name="password" placeholder="Пароль" required>
+        <input type="password" name="confirmPassword" placeholder="Подтвердите пароль" required>
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+    <div class="login-link">
+        <p>Уже есть аккаунт? <a href="/login">Войдите здесь</a></p>
+    </div>
+    <div class="error-message">
+        <p th:text="${error}"></p>
+    </div>
+</div>
+</body>
+</html>

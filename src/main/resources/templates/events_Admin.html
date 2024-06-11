@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>События</title>
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ru.js'></script>
+    <style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #343a40;
+            color: white;
+        }
+        .profile-container img {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .container {
+            margin-top: 20px;
+        }
+    </style>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+
+            const events = /*[[${eventsJson}]]*/ '[]';
+            console.log("Events JSON:", events);
+
+            const parsedEvents = JSON.parse(events).map(event => ({
+                title: event.nameEvent,
+                start: event.date,
+                url: '/user/event-details/' + event.id
+            }));
+
+            console.log("Parsed Events:", parsedEvents);
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'ru',
+                events: parsedEvents,
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault();
+                    if (info.event.url) {
+                        window.location.href = info.event.url;
+                    }
+                }
+            });
+
+            calendar.render();
+        });
+        /*]]>*/
+    </script>
+</head>
+<body>
+<div class="header">
+    <h1>События</h1>
+    <div class="profile-container">
+        <a href="/user/profile">
+            <img src="/images/lk.png" alt="Личный кабинет" />
+        </a>
+    </div>
+</div>
+<div class="container">
+    <h2 class="text-center my-4">Добавить новое событие</h2>
+    <form action="#" th:action="@{/add-event}" method="post" class="mb-4">
+        <div class="form-group">
+            <label for="nameEvent">Название события:</label>
+            <input type="text" id="nameEvent" name="nameEvent" class="form-control" placeholder="Название события" required>
+        </div>
+        <div class="form-group">
+            <label for="date">Дата события (yyyy-MM-dd):</label>
+            <input type="text" id="date" name="date" class="form-control" placeholder="Дата события (yyyy-MM-dd)" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Добавить событие</button>
+    </form>
+    <h2 class="text-center my-4">Список событий</h2>
+    <div id='calendar'></div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

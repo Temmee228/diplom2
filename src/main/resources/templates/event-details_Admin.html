@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Управление событиями</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js'></script>
+    <style>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #343a40;
+            color: white;
+        }
+        .profile-container img {
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        .form-container {
+            margin-top: 20px;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .form-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .form-actions a {
+            color: white;
+        }
+        .table-actions {
+            display: flex;
+            gap: 10px;
+        }
+        .table-actions a {
+            color: white;
+        }
+    </style>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const stages = /*[[${event.stages}]]*/ []; // JSON-представление стадий
+
+            // Преобразование стадий в формат FullCalendar
+            const events = stages.map(stage => {
+                return {
+                    title: stage.name,
+                    start: stage.date,
+                    description: stage.description
+                };
+            });
+
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                locale: 'ru',
+                initialView: 'dayGridMonth',
+                events: events,
+                displayEventTime: false,
+                validRange: function(nowDate) {
+                    return {
+                        start: events.length ? events[0].start : nowDate,
+                        end: events.length ? events[events.length - 1].start : nowDate
+                    };
+                },
+                // Отображение только тех дней, в которые есть мероприятия
+                dayCellContent: function(e) {
+                    if (!events.some(event => event.start.includes(e.date.toISOString().split('T')[0]))) {
+                        e.dayNumberText = '';
+                    }
+                }
+            });
+
+            calendar.render();
+        });
+        /*]]>*/
+    </script>
+</head>
+<body>
+<div class="header">
+    <h1>Управление событиями</h1>
+    <div class="profile-container">
+        <a href="/user/profile">
+            <img src="/images/lk.png" alt="Личный кабинет" />
+        </a>
+    </div>
+</div>
+<div class="container mt-4">
+    <div class="form-container">
+        <form th:action="@{/admin/event/edit}" th:object="${event}" method="post" class="mb-4">
+            <input type="hidden" th:field="*{id}">
+            <div class="form-group">
+                <label for="nameEvent">Название</label>
+                <input type="text" id="nameEvent" name="nameEvent" class="form-control" th:value="${event.nameEvent}" required />
+            </div>
+            <div class="form-group">
+                <label for="date">Дата</label>
+                <input type="date" id="date" name="date" class="form-control" th:value="${event.date}" required />
+            </div>
+            <div class="form-group">
+                <label for="description">Описание</label>
+                <textarea id="description" name="description" class="form-control" required th:text="${event.description}"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <a th:href="@{/admin/event/{id}/delete(id=${event.id})}" class="btn btn-danger">Удалить</a>
+            </div>
+        </form>
+    </div>
+
+    <h2>Управление стадиями</h2>
+    <div class="form-container">
+        <form th:action="@{/admin/event/{id}/stage/save(id=${event.id})}" th:object="${stage}" method="post" class="mb-4">
+            <input type="hidden" th:field="*{id}">
+            <div class="form-group">
+                <label for="stageName">Название стадии</label>
+                <input type="text" id="stageName" name="name" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="stageDate">Дата</label>
+                <input type="date" id="stageDate" name="date" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="stageDescription">Описание</label>
+                <textarea id="stageDescription" name="description" class="form-control" required></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Добавить/Обновить стадию</button>
+                <button type="button" class="btn btn-danger" onclick="location.href='/admin/event/${event.id}/stage/delete'">Удалить стадию</button>
+            </div>
+        </form>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Название</th>
+            <th>Дата</th>
+            <th>Описание</th>
+            <th>Действия</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="stage : ${stages}">
+            <td th:text="${stage.name}"></td>
+            <td th:text="${stage.date}"></td>
+            <td th:text="${stage.description}"></td>
+            <td class="table-actions">
+                <a th:href="@{/admin/event/{eventId}/stage/{stageId}/edit(eventId=${event.id}, stageId=${stage.id})}" class="btn btn-warning">Редактировать</a>
+                <a th:href="@{/admin/event/{eventId}/stage/{stageId}/delete(eventId=${event.id}, stageId=${stage.id})}" class="btn btn-danger">Удалить</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div id="calendar" class="mb-4"></div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
